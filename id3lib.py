@@ -1,6 +1,7 @@
 import os
 import sys
 import math
+import cmath
 
 def get_entropy(set):
     """
@@ -9,7 +10,7 @@ def get_entropy(set):
     :param set:
     :return:
     """
-    entropy = 0
+    total = len(set)
     num_positive = 0
     num_negative = 0
     for element in set:
@@ -17,24 +18,64 @@ def get_entropy(set):
             num_negative += 1
         else:
             num_positive += 1
-
-    entropy = -num_positive * math.log(num_positive, 2) - (num_negative * math.log(num_negative, 2))
+    try:
+        entropy = -(num_positive / total) * math.log(num_positive / total, 2) - ((num_negative / total) * math.log(num_negative / total, 2))
+    except:
+        entropy = 0
 
     return entropy
 
-def info_gain(set, A):
+def info_gain(set, label, A):
     """
     Information gain measures a reduction in entropy that results from partitioning the data on an attribute A.
     It represents how effective an attribute is at classifying the data.
     :param set: Set of attributes
-    :param A: The attribute we are interested in
+    :param A: The attribute we are interested in [0, 1, 2, 3] [Outlook, temp, humid, wind]
     :return:
     """
     set_size = len(set)
-    entropy_S = get_entropy(set)
+    entropy_S = get_entropy(label) # Entropy for the whole set
 
-    attribute_count = 0
+    # Determine how many values there are for this specific attribute
+    diff = []
     for element in set:
         for attribute in element:
-            if attribute == A: # Numbers
-                attribute_count += 1
+            if element[A] not in diff:
+                diff.append(element[A]) # element[A] refers to specific value for that attribute
+
+    # Number of different values e.g., Outlook = 3, Weather = 2
+    num_values = len(diff)
+
+    """
+    This part requires generalization
+    This works only for tennis
+    """
+    attribute_counts = []
+    set_attributes_pair = []
+    set_labels_pair = []
+    for i in range(num_values):
+        attribute_counts.append(0)
+        set_attributes_pair.append([])
+        set_labels_pair.append([])
+
+    element_count = 0
+    for element in set:
+        count = 0
+        for attribute in element:
+            if count == A:
+                attribute_counts[attribute] += 1
+                set_attributes_pair[attribute].append(element)
+                set_labels_pair[attribute].append(label[element_count])
+
+            count += 1
+        element_count += 1
+
+    return_value = entropy_S
+    # Calculate individual entropies
+    count = 0
+    for label_set in set_labels_pair:
+        entropy = get_entropy(label_set)
+        return_value -= (attribute_counts[count] / set_size) * entropy
+        count += 1
+
+    return return_value
