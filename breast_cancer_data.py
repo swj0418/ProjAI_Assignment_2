@@ -30,5 +30,5 @@ tmp = []
 # iterate through all elements in feature array
 # remove last value (label)
 for element in breast_cancer_features:
-    newList.append(element[0:10])
-breast_cancer_features = newList
+    tmp.append(element[0:10])
+breast_cancer_features = tmp
