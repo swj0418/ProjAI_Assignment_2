@@ -27,4 +27,33 @@ def split_train_test(data, labels):
 
     return train_data, train_labels, test_data, test_labels
 
-split_train_test(data, labels)
+def two_fold_val(train_data, train_labels):
+    # find size of training set
+    length = len(train_data)
+
+    # randomly seperate in half
+    indices = random.sample(range(length), int(length / 2))
+
+    data1 = []
+    labels1 = []
+    data2 = train_data
+    labels2 = train_labels
+
+    for i in sorted(indices, reverse = True):
+        data1.append(train_data[i])
+        labels1.append(train_labels[i])
+        del data2[i]
+        del labels2[i]
+        
+    return data1, labels1, data2, labels2
+
+two_fold_val(data, labels)
+
+def five_fold_val():
+    return 0
+
+def ten_fold_val():
+    return 0
+
+def LOO_val():
+    return 0
