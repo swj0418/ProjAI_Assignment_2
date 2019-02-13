@@ -1,6 +1,8 @@
 import os
 import sys
 
+
+
 def load_tennis_dataset():
     set = [[2, 2, 2, 0],
 		     [2, 2, 2, 2],
@@ -21,6 +23,12 @@ def load_tennis_dataset():
 
     return set, labels
 
+def retrieve_tennis_attribute_label(attribute_class_id):
+    tennis_attribute_name = {0: "Outlook", 1: "Temperature", 2: "Humidity", 3: "Wind"}
+    if attribute_class_id > 3 or attribute_class_id < 0:
+        return "Bad Attribute Id"
+    else:
+        return tennis_attribute_name[attribute_class_id]
 
 def load_custom_dataset():
     set = []
@@ -64,5 +72,3 @@ def load_custom_dataset():
     print(len(set))
     print(len(labels))
     return set, labels
-
-load_custom_dataset()

@@ -92,4 +92,4 @@ def get_highest_infogain(set, label, attribute_classes):
 
         count += 1
 
-    return attribute_class_num
+    return attribute_class_num, gain
