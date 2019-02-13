@@ -44,13 +44,55 @@ def two_fold_val(train_data, train_labels):
         labels1.append(train_labels[i])
         del data2[i]
         del labels2[i]
-        
+
     return data1, labels1, data2, labels2
 
-two_fold_val(data, labels)
+def five_fold_val(train_data, train_labels):
+    length = len(train_data)
+    indices = random.sample(range(length), int(length/5))
+    data1 = []
+    labels1 = []
+    data5 = train_data
+    labels5 = train_labels
 
-def five_fold_val():
-    return 0
+    for i in sorted(indices, reverse = True):
+        data1.append(train_data[1])
+        labels1.append(train_labels[1])
+        del data5[i]
+        del labels5[i]
+
+    indices = random.sample(range(len(data5)), int(length/5))
+    data2 = []
+    labels2 = []
+
+    for i in sorted(indices, reverse = True):
+        data2.append(data5[i])
+        labels2.append(labels5[i])
+        del data5[i]
+        del labels5[i]
+
+    indices = random.sample(range(len(data5)), int(length/5))
+    data3 = []
+    labels3 = []
+
+    for i in sorted(indices, reverse = True):
+        data3.append(data5[i])
+        labels3.append(data5[i])
+        del data5[i]
+        del labels5[i]
+
+    indices = random.sample(range(len(data5)), int(length / 5))
+    data4 = []
+    labels4 = []
+
+    for i in sorted(indices, reverse = True):
+        data4.append(data5[i])
+        labels4.append(labels5[i])
+        del data5[i]
+        del labels5[i]
+
+    return data1, labels1, data2, labels2, data3, labels3,
+    data4, labels4, data5, labels5
 
 def ten_fold_val():
     return 0
