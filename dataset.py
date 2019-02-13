@@ -60,5 +60,3 @@ def load_custom_dataset():
     set = tmp
 
     return set, labels
-
-load_custom_dataset()
