@@ -67,8 +67,4 @@ def load_custom_dataset():
         tmp.append(element[0:10])
     set = tmp
 
-    print(set)
-    print(labels)
-    print(len(set))
-    print(len(labels))
     return set, labels
