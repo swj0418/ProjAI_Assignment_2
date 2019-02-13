@@ -54,11 +54,14 @@ def load_custom_dataset():
             if i == len(line_vals) - 1:
                 set.append(line_vals)
 
-    # Convert 
-
     # Label extraction
     for i in range(0, len(set)):
-        labels.append(set[i][10])
+        x = set[i][10]
+        if x == 2:
+            x = 0
+        else:
+            x = 1
+        labels.append(x)
 
     # Remove labels from feature vectors
     tmp = []
