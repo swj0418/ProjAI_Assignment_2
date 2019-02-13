@@ -53,7 +53,7 @@ def info_gain(set, label, A):
     attribute_counts = []
     set_attributes_pair = []
     set_labels_pair = []
-    for i in range(num_values):
+    for i in range(3):
         attribute_counts.append(0)
         set_attributes_pair.append([])
         set_labels_pair.append([])
@@ -79,3 +79,17 @@ def info_gain(set, label, A):
         count += 1
 
     return return_value
+
+def get_highest_infogain(set, label, attribute_classes):
+    max = 0
+    attribute_class_num = 0
+    count = 0
+    for attribute_class in attribute_classes:
+        gain = info_gain(set, label, attribute_class)
+        if gain > max:
+            max = gain
+            attribute_class_num = count
+
+        count += 1
+
+    return attribute_class_num
