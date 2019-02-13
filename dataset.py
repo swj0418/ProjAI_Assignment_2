@@ -54,6 +54,8 @@ def load_custom_dataset():
             if i == len(line_vals) - 1:
                 set.append(line_vals)
 
+    # Convert 
+
     # Label extraction
     for i in range(0, len(set)):
         labels.append(set[i][10])
