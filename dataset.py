@@ -41,7 +41,10 @@ def load_custom_dataset():
             if line_vals[i] == '?':
                 break
             line_vals[i] = int(line_vals[i])
-            set.append(line_vals)
+            # check if we're at last element
+            # won't make it here is there is NA value
+            if i == len(line_vals) - 1:
+                set.append(line_vals)
 
     # Label extraction
     for i in range(0, len(set)):
@@ -56,4 +59,10 @@ def load_custom_dataset():
         tmp.append(element[0:10])
     set = tmp
 
+    print(set)
+    print(labels)
+    print(len(set))
+    print(len(labels))
     return set, labels
+
+load_custom_dataset()
