@@ -41,7 +41,7 @@ class ID3:
         print("===================== Prediction ======================")
         print("Depth 0: ", "parent attribute: ", self.root.parent_attribute, "  my_attribute: ", self.root.attribute,
               "  my_value: ", self.root.value)
-        
+
         for child in self.root.children:
             print("Depth 1: ", "parent attribute: ", child.parent_attribute, "  my_attribute: ", child.attribute,
                   "  my_value: ", child.value)
@@ -96,6 +96,8 @@ class ID3:
                 node = Node()
                 node.attribute = value
                 node.value = value
+                if parent_attribute is None:
+                    node.parent_attribute = value
 
                 # print("New node value: ", value)
 
@@ -187,6 +189,31 @@ class ID3:
                 for final in c.children:
                     print("Depth 3: ", "parent attribute: ", final.parent_attribute, "  my_attribute: ", final.attribute,
                           "  my_value: ", final.value)
+
+    # Method for classifying new instances
+    def classify_instance(self, example):
+        cur_node = self.root
+
+        # traverse the tree until we reach a leaf node
+        while cur_node.value is None:
+
+            # get value for the attribute in the desired instance
+            # for the current decision node
+            cur_attribute = cur_node.attribute
+            attribute_val = example[cur_attribute]
+
+            # find the child node down the path with the correct value
+            for i in cur_node.children:
+                if i.parent_attribute == attribute_val:
+                    cur_node = i
+                    break
+
+        # value at leaf node is our classification            
+        return cur_node.value
+
+
+
+
 
 
 # root node contains
