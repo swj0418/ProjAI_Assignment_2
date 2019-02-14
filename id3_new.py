@@ -1,5 +1,6 @@
 from dataset import *
 from id3lib import *
+from data_splitting_functions import *
 
 import numpy as np
 # Node class : each node will be a class of attributes
@@ -34,7 +35,7 @@ class ID3:
         self.iteration = 0
 
     def build(self):
-        self.root = self.run_id3(self.data, self.label, attributes=[0, 1, 2, 3])
+        self.root = self.run_id3(self.data, self.label, range(len(data[0])))
 
     def predict(self, attribute):
         print("===================== Prediction ======================")
