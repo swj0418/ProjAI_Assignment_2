@@ -9,6 +9,10 @@ data, labels = load_custom_dataset()
 # Create and return a training and testing set from the dataset provided
 # The test set will be selected by randomly selecting 10% of the instances
 # from the total dataset
+# The return is four arrays: one containing the feature vectors for all
+# instances in the training set, one containing the corresponding labels
+# for all instances in the training set, and then the same two arrays containing
+# the information for the testing set.
 def split_train_test(data, labels):
     # find 10% of total size of dataset
     length = len(data)
@@ -36,6 +40,9 @@ def split_train_test(data, labels):
 
 # Separates training set for two-fold validation through
 # random selection (and removal) of half of the data
+# The return is four arrays: two contain the group of feature vectors for
+# the two different groups, and the other two containing the corresponding
+# labels
 def two_fold_val(train_data, train_labels):
     # find size of training set
     length = len(train_data)
@@ -58,6 +65,8 @@ def two_fold_val(train_data, train_labels):
 
 # Creates dataset for 5-fold validation by randomly breaking the
 # training set into 5 (roughly) equal-sized chunks
+# The return is two arrays: one containing each of the five sets of
+# data groups, and the other containg the corresponding labels
 def five_fold_val(data, labels):
     datasets = []
     labelsets = []
@@ -85,6 +94,8 @@ def five_fold_val(data, labels):
 
 # Creates datasets for 10-fold validation by randomly breaking the
 # training set into 10 (roughly) equal-sized sections
+# The return is two arrays: one containing each of the ten sets of
+# data groups, and the other containg the corresponding labels
 def ten_fold_val(data, labels):
     datasets = []
     labelsets = []
@@ -114,5 +125,30 @@ def ten_fold_val(data, labels):
     return datasets, labelsets
 
 
-def LOO_val():
-    return 0
+# Creates datasets for leave-one-out cross validation
+# Goes through all possible iterations of leaving one instance out of the
+# training set
+# Returns 4 arrays: two containing the feature vectors of the validation and
+# training data, and two containing the labels. The arrays are organized so that
+# training_data[0] will have the feature vectors for all instances except
+# the instance at validation_data[0], and so on.
+def LOO_val(data, labels):
+    validation_data = []
+    validation_labels = []
+    training_data = []
+    training_labels = []
+
+    for i in range(len(data)):
+        tmp_data = data.copy()
+        tmp_labels = labels.copy()
+
+        validation_data.append(tmp_data[i])
+        validation_labels.append(tmp_labels[i])
+
+        del tmp_data[i]
+        del tmp_labels[i]
+
+        training_data.append(tmp_data)
+        training_labels.append(tmp_labels)
+
+    return training_data, training_labels, validation_data, validation_labels
