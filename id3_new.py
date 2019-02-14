@@ -63,17 +63,16 @@ class ID3:
         :return:
         """
         root = Node()
+        root.parent_attribute = parent_attribute
         print(examples, "    ", labels, "    ", target_attribute, "    ", attributes)
 
         if self.check_all_positive(labels):
             # Return root node with pos/yes label
-            root.parent_attribute = parent_attribute
             root.value = 1
             print("All positive: ", root.value)
             return root  # , 1 # 1 as in positive label
         elif self.check_all_negative(labels):
             # Return root node with neg/no label
-            root.parent_attribute = parent_attribute
             root.value = 0
             print("All negative: ", root.value)
             return root  # , 0 # Negative label
@@ -82,7 +81,6 @@ class ID3:
             # Return root node with label the most common value of classification attribute in example
             pred = self.get_most_popular(labels)
             print("Most common attribute: ", pred)
-            root.parent_attribute = parent_attribute
             root.value = pred
             return root  # , self.get_most_popular(example_labels=labels)
 
@@ -94,10 +92,8 @@ class ID3:
             for value in possible_values:
                 # Add a new tree branch below root. Children list
                 node = Node()
-                node.attribute = value
+                node.attribute = best_attribute
                 node.value = value
-                if parent_attribute is None:
-                    node.parent_attribute = value
 
                 # print("New node value: ", value)
 
@@ -190,6 +186,7 @@ class ID3:
                     print("Depth 3: ", "parent attribute: ", final.parent_attribute, "  my_attribute: ", final.attribute,
                           "  my_value: ", final.value)
 
+
     # Method for classifying new instances
     def classify_instance(self, example):
         cur_node = self.root
@@ -208,7 +205,7 @@ class ID3:
                     cur_node = i
                     break
 
-        # value at leaf node is our classification            
+        # value at leaf node is our classification
         return cur_node.value
 
 
