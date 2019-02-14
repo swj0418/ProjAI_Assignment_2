@@ -90,7 +90,7 @@ def five_fold_val(data, labels):
     datasets.append(rem_data)
     labelsets.append(rem_labels)
 
-    return rem_data, rem_labels
+    return datasets, labelsets
 
 # Creates datasets for 10-fold validation by randomly breaking the
 # training set into 10 (roughly) equal-sized sections
@@ -122,6 +122,7 @@ def ten_fold_val(data, labels):
 
     datasets.append(rem_data)
     labelsets.append(rem_labels)
+    
     return datasets, labelsets
 
 
