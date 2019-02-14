@@ -94,8 +94,30 @@ def five_fold_val(train_data, train_labels):
     return data1, labels1, data2, labels2, data3, labels3,
     data4, labels4, data5, labels5
 
-def ten_fold_val():
-    return 0
+def ten_fold_val(data, labels):
+    datasets = []
+    labelsets = []
+
+    rem_data = data
+    rem_labels = labels
+    length = len(data)
+
+    for i in range(9):
+        indices = random.sample(range(len(rem_data)), int(length/10))
+        tmpdata = []
+        tmplabel = []
+        for j in sorted(indices, reverse = True):
+            tmpdata.append(rem_data[i])
+            tmplabel.append(rem_labels[i])
+            del rem_data[i]
+            del rem_labels[i]
+        datasets.append(tmpdata)
+        labelsets.append(tmplabel)
+
+    datasets.append(rem_data)
+    labelsets.append(rem_labels)
+    return datasets, labelsets
+
 
 def LOO_val():
     return 0
