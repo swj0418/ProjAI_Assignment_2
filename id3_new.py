@@ -175,15 +175,15 @@ class ID3:
         self.root.print()
         print("==========================================================")
         print(self.root.attribute)
-        print("Depth 0: ", "parent attribute: ", self.root.parent_attribute, "  my_attribute: ", self.root.attribute,
+        print("Depth 0: ", "parent attribute value: ", self.root.parent_attribute, "  my_attribute: ", self.root.attribute,
               "  my_value: ", self.root.value)
         for child in self.root.children:
-            print("Depth 1: ", "parent attribute: ", child.parent_attribute, "  my_attribute: ", child.attribute, "  my_value: ", child.value)
+            print("Depth 1: ", "parent attribute value: ", child.parent_attribute, "  my_attribute: ", child.attribute, "  my_value: ", child.value)
 
             for c in child.children:
-                print("Depth 2: ", "parent attribute: ", c.parent_attribute, "  my_attribute: ", c.attribute, "  my_value: ", c.value)
+                print("Depth 2: ", "parent attribute value: ", c.parent_attribute, "  my_attribute: ", c.attribute, "  my_value: ", c.value)
                 for final in c.children:
-                    print("Depth 3: ", "parent attribute: ", final.parent_attribute, "  my_attribute: ", final.attribute,
+                    print("Depth 3: ", "parent attribute value: ", final.parent_attribute, "  my_attribute: ", final.attribute,
                           "  my_value: ", final.value)
 
 
@@ -222,3 +222,7 @@ if __name__ == '__main__':
     id3.build()
 
     id3.print_tree()
+
+    test_feature_vect = [0, 2, 1, 0]
+    pred = id3.classify_instance(test_feature_vect)
+    print(pred)
