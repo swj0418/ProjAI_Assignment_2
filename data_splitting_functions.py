@@ -6,6 +6,13 @@ import random
 from dataset import *
 data, labels = load_custom_dataset()
 
+# Create and return a training and testing set from the dataset provided
+# The test set will be selected by randomly selecting 10% of the instances
+# from the total dataset
+# The return is four arrays: one containing the feature vectors for all
+# instances in the training set, one containing the corresponding labels
+# for all instances in the training set, and then the same two arrays containing
+# the information for the testing set.
 def split_train_test(data, labels):
     # find 10% of total size of dataset
     length = len(data)
@@ -19,6 +26,10 @@ def split_train_test(data, labels):
     train_data = data
     train_labels = labels
 
+    # for each random index add that data to the testing set and remove
+    # from training. Indices are sorted and removed in reverse order so
+    # that the indexing will not be affected by changes in size due to
+    # removing items.
     for i in sorted(indices, reverse = True):
         test_data.append(data[i])
         test_labels.append(labels[i])
@@ -27,6 +38,11 @@ def split_train_test(data, labels):
 
     return train_data, train_labels, test_data, test_labels
 
+# Separates training set for two-fold validation through
+# random selection (and removal) of half of the data
+# The return is four arrays: two contain the group of feature vectors for
+# the two different groups, and the other two containing the corresponding
+# labels
 def two_fold_val(train_data, train_labels):
     # find size of training set
     length = len(train_data)
@@ -47,55 +63,92 @@ def two_fold_val(train_data, train_labels):
 
     return data1, labels1, data2, labels2
 
-def five_fold_val(train_data, train_labels):
-    length = len(train_data)
-    indices = random.sample(range(length), int(length/5))
-    data1 = []
-    labels1 = []
-    data5 = train_data
-    labels5 = train_labels
+# Creates dataset for 5-fold validation by randomly breaking the
+# training set into 5 (roughly) equal-sized chunks
+# The return is two arrays: one containing each of the five sets of
+# data groups, and the other containg the corresponding labels
+def five_fold_val(data, labels):
+    datasets = []
+    labelsets = []
 
-    for i in sorted(indices, reverse = True):
-        data1.append(train_data[1])
-        labels1.append(train_labels[1])
-        del data5[i]
-        del labels5[i]
+    rem_data = data
+    rem_labels = labels
+    length = len(data)
 
-    indices = random.sample(range(len(data5)), int(length/5))
-    data2 = []
-    labels2 = []
+    for i in range(4):
+        indices = random.sample(range(len(rem_data)), int(length/5))
+        tmpdata = []
+        tmplabel = []
+        for j in sorted(indices, reverse = True):
+            tmpdata.append(rem_data[i])
+            tmplabel.append(rem_labels[i])
+            del rem_data[i]
+            del rem_labels[i]
+        datasets.append(tmpdata)
+        labelsets.append(tmplabel)
 
-    for i in sorted(indices, reverse = True):
-        data2.append(data5[i])
-        labels2.append(labels5[i])
-        del data5[i]
-        del labels5[i]
+    datasets.append(rem_data)
+    labelsets.append(rem_labels)
 
-    indices = random.sample(range(len(data5)), int(length/5))
-    data3 = []
-    labels3 = []
+    return rem_data, rem_labels
 
-    for i in sorted(indices, reverse = True):
-        data3.append(data5[i])
-        labels3.append(data5[i])
-        del data5[i]
-        del labels5[i]
+# Creates datasets for 10-fold validation by randomly breaking the
+# training set into 10 (roughly) equal-sized sections
+# The return is two arrays: one containing each of the ten sets of
+# data groups, and the other containg the corresponding labels
+def ten_fold_val(data, labels):
+    datasets = []
+    labelsets = []
 
-    indices = random.sample(range(len(data5)), int(length / 5))
-    data4 = []
-    labels4 = []
+    rem_data = data
+    rem_labels = labels
+    length = len(data)
 
-    for i in sorted(indices, reverse = True):
-        data4.append(data5[i])
-        labels4.append(labels5[i])
-        del data5[i]
-        del labels5[i]
+    # for the first 9 datasets, keep randomly selecting a number of
+    # indices equal to 1/10 the size of the original dataset
+    # removing these from the remaining data will result in the remaining
+    # data after all iterations being the correct size for the 10th section
+    for i in range(9):
+        indices = random.sample(range(len(rem_data)), int(length/10))
+        tmpdata = []
+        tmplabel = []
+        for j in sorted(indices, reverse = True):
+            tmpdata.append(rem_data[i])
+            tmplabel.append(rem_labels[i])
+            del rem_data[i]
+            del rem_labels[i]
+        datasets.append(tmpdata)
+        labelsets.append(tmplabel)
 
-    return data1, labels1, data2, labels2, data3, labels3,
-    data4, labels4, data5, labels5
+    datasets.append(rem_data)
+    labelsets.append(rem_labels)
+    return datasets, labelsets
 
-def ten_fold_val():
-    return 0
 
-def LOO_val():
-    return 0
+# Creates datasets for leave-one-out cross validation
+# Goes through all possible iterations of leaving one instance out of the
+# training set
+# Returns 4 arrays: two containing the feature vectors of the validation and
+# training data, and two containing the labels. The arrays are organized so that
+# training_data[0] will have the feature vectors for all instances except
+# the instance at validation_data[0], and so on.
+def LOO_val(data, labels):
+    validation_data = []
+    validation_labels = []
+    training_data = []
+    training_labels = []
+
+    for i in range(len(data)):
+        tmp_data = data.copy()
+        tmp_labels = labels.copy()
+
+        validation_data.append(tmp_data[i])
+        validation_labels.append(tmp_labels[i])
+
+        del tmp_data[i]
+        del tmp_labels[i]
+
+        training_data.append(tmp_data)
+        training_labels.append(tmp_labels)
+
+    return training_data, training_labels, validation_data, validation_labels
