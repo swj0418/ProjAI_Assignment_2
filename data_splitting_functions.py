@@ -6,6 +6,9 @@ import random
 from dataset import *
 data, labels = load_custom_dataset()
 
+# Create and return a training and testing set from the dataset provided
+# The test set will be selected by randomly selecting 10% of the instances
+# from the total dataset
 def split_train_test(data, labels):
     # find 10% of total size of dataset
     length = len(data)
@@ -19,6 +22,10 @@ def split_train_test(data, labels):
     train_data = data
     train_labels = labels
 
+    # for each random index add that data to the testing set and remove
+    # from training. Indices are sorted and removed in reverse order so
+    # that the indexing will not be affected by changes in size due to
+    # removing items.
     for i in sorted(indices, reverse = True):
         test_data.append(data[i])
         test_labels.append(labels[i])
@@ -27,6 +34,8 @@ def split_train_test(data, labels):
 
     return train_data, train_labels, test_data, test_labels
 
+# Separates training set for two-fold validation through
+# random selection (and removal) of half of the data
 def two_fold_val(train_data, train_labels):
     # find size of training set
     length = len(train_data)
@@ -47,53 +56,35 @@ def two_fold_val(train_data, train_labels):
 
     return data1, labels1, data2, labels2
 
-def five_fold_val(train_data, train_labels):
-    length = len(train_data)
-    indices = random.sample(range(length), int(length/5))
-    data1 = []
-    labels1 = []
-    data5 = train_data
-    labels5 = train_labels
+# Creates dataset for 5-fold validation by randomly breaking the
+# training set into 5 (roughly) equal-sized chunks
+def five_fold_val(data, labels):
+    datasets = []
+    labelsets = []
 
-    for i in sorted(indices, reverse = True):
-        data1.append(train_data[1])
-        labels1.append(train_labels[1])
-        del data5[i]
-        del labels5[i]
+    rem_data = data
+    rem_labels = labels
+    length = len(data)
 
-    indices = random.sample(range(len(data5)), int(length/5))
-    data2 = []
-    labels2 = []
+    for i in range(4):
+        indices = random.sample(range(len(rem_data)), int(length/5))
+        tmpdata = []
+        tmplabel = []
+        for j in sorted(indices, reverse = True):
+            tmpdata.append(rem_data[i])
+            tmplabel.append(rem_labels[i])
+            del rem_data[i]
+            del rem_labels[i]
+        datasets.append(tmpdata)
+        labelsets.append(tmplabel)
 
-    for i in sorted(indices, reverse = True):
-        data2.append(data5[i])
-        labels2.append(labels5[i])
-        del data5[i]
-        del labels5[i]
+    datasets.append(rem_data)
+    labelsets.append(rem_labels)
 
-    indices = random.sample(range(len(data5)), int(length/5))
-    data3 = []
-    labels3 = []
+    return rem_data, rem_labels
 
-    for i in sorted(indices, reverse = True):
-        data3.append(data5[i])
-        labels3.append(data5[i])
-        del data5[i]
-        del labels5[i]
-
-    indices = random.sample(range(len(data5)), int(length / 5))
-    data4 = []
-    labels4 = []
-
-    for i in sorted(indices, reverse = True):
-        data4.append(data5[i])
-        labels4.append(labels5[i])
-        del data5[i]
-        del labels5[i]
-
-    return data1, labels1, data2, labels2, data3, labels3,
-    data4, labels4, data5, labels5
-
+# Creates datasets for 10-fold validation by randomly breaking the
+# training set into 10 (roughly) equal-sized sections
 def ten_fold_val(data, labels):
     datasets = []
     labelsets = []
@@ -102,6 +93,10 @@ def ten_fold_val(data, labels):
     rem_labels = labels
     length = len(data)
 
+    # for the first 9 datasets, keep randomly selecting a number of
+    # indices equal to 1/10 the size of the original dataset
+    # removing these from the remaining data will result in the remaining
+    # data after all iterations being the correct size for the 10th section
     for i in range(9):
         indices = random.sample(range(len(rem_data)), int(length/10))
         tmpdata = []
