@@ -3,10 +3,12 @@ import sys
 
 def load_id3_test_dataset():
     set = [[2, 1, 0, 1],
-           [0, 2, 1, 0],
-           [1, 0, 1, 2]]
+           [0, 1, 1, 0],
+           [1, 0, 1, 2],
+           [1, 1, 0, 0],
+           [2, 1, 2, 1]]
 
-    labels = [0, 0, 0]
+    labels = [0, 1, 0, 1, 0]
 
     return set, labels
 
