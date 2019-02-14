@@ -27,15 +27,14 @@ class Node:
                 child.print()
 
 class ID3:
-    def __init__(self, data, label, target):
+    def __init__(self, data, label):
         self.data = data
         self.label = label
         self.root = None
-        self.target = target
         self.iteration = 0
 
     def build(self):
-        self.root = self.run_id3(self.data, self.label, target_attribute=self.target, attributes=[0, 1, 2, 3])
+        self.root = self.run_id3(self.data, self.label, attributes=[0, 1, 2, 3])
 
     def predict(self, attribute):
         print("===================== Prediction ======================")
@@ -54,17 +53,16 @@ class ID3:
                           final.attribute,
                           "  my_value: ", final.value)
 
-    def run_id3(self, examples, labels, target_attribute, attributes, parent_attribute=None):
+    def run_id3(self, examples, labels, attributes, parent_attribute=None):
         """
 
         :param examples: Training examples
-        :param target_attribute: Attribute whose value is to be predicted by the tree
         :param attributes: A list of other attributes that may be tested by the learned decision tree
         :return:
         """
         root = Node()
         root.parent_attribute = parent_attribute
-        print(examples, "    ", labels, "    ", target_attribute, "    ", attributes)
+        print(examples, "    ", labels, "    ", attributes)
 
         if self.check_all_positive(labels):
             # Return root node with pos/yes label
@@ -117,7 +115,7 @@ class ID3:
                     print("Calling iter: ", self.iteration, attributes, "    ", new_attributes, "   ", best_attribute, "   ", retrieve_tennis_attribute_label(best_attribute))
                     # Below this new branch add a subtree
                     self.iteration += 1
-                    node = self.run_id3(branch_example, branch_label, target_attribute, new_attributes, parent_attribute=value)
+                    node = self.run_id3(branch_example, branch_label, new_attributes, parent_attribute=value)
                     root.children.append(node)
 
         return root
@@ -218,11 +216,11 @@ if __name__ == '__main__':
     data, label = load_tennis_dataset()
     # data, label = load_id3_test_dataset()
 
-    id3 = ID3(data, label, target=[0, 0, 1, 0])
+    id3 = ID3(data, label)
     id3.build()
 
     id3.print_tree()
 
-    test_feature_vect = [0, 2, 1, 0]
-    pred = id3.classify_instance(test_feature_vect)
-    print(pred)
+    for i in range(len(data)):
+        pred = id3.classify_instance(data[i])
+        print("Prediction: ", pred, "  Actual: ",label[i])
