@@ -23,8 +23,8 @@ def split_train_test(data, labels):
 
     test_data = []
     test_labels = []
-    train_data = data
-    train_labels = labels
+    train_data = data.copy()
+    train_labels = labels.copy()
 
     # for each random index add that data to the testing set and remove
     # from training. Indices are sorted and removed in reverse order so
@@ -52,8 +52,8 @@ def two_fold_val(train_data, train_labels):
 
     data1 = []
     labels1 = []
-    data2 = train_data
-    labels2 = train_labels
+    data2 = train_data.copy()
+    labels2 = train_labels.copy()
 
     for i in sorted(indices, reverse = True):
         data1.append(train_data[i])
@@ -71,8 +71,8 @@ def five_fold_val(data, labels):
     datasets = []
     labelsets = []
 
-    rem_data = data
-    rem_labels = labels
+    rem_data = data.copy()
+    rem_labels = labels.copy()
     length = len(data)
 
     for i in range(4):
@@ -100,8 +100,8 @@ def ten_fold_val(data, labels):
     datasets = []
     labelsets = []
 
-    rem_data = data
-    rem_labels = labels
+    rem_data = data.copy()
+    rem_labels = labels.copy()
     length = len(data)
 
     # for the first 9 datasets, keep randomly selecting a number of
@@ -122,7 +122,7 @@ def ten_fold_val(data, labels):
 
     datasets.append(rem_data)
     labelsets.append(rem_labels)
-    
+
     return datasets, labelsets
 
 
