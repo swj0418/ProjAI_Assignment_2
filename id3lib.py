@@ -3,17 +3,17 @@ import sys
 import math
 import cmath
 
-def get_entropy(set):
+def get_entropy(labels):
     """
     0 entropy means that all of the classifications in the data set are the same
     1 equal number of labels
     :param set:
     :return:
     """
-    total = len(set)
+    total = len(labels)
     num_positive = 0
     num_negative = 0
-    for element in set:
+    for element in labels:
         if element == 0:
             num_negative += 1
         else:
@@ -53,6 +53,7 @@ def info_gain(set, label, A):
     attribute_counts = []
     set_attributes_pair = []
     set_labels_pair = []
+
     for i in range(3):
         attribute_counts.append(0)
         set_attributes_pair.append([])
@@ -88,7 +89,7 @@ def get_highest_infogain(set, label, attribute_classes):
         gain = info_gain(set, label, attribute_class)
         if gain > max:
             max = gain
-            attribute_class_num = count
+            attribute_class_num = attribute_classes[count]
 
         count += 1
 
