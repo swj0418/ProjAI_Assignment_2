@@ -54,7 +54,7 @@ def info_gain(set, label, A):
     set_attributes_pair = []
     set_labels_pair = []
 
-    for i in range(3):
+    for i in range(num_values):
         attribute_counts.append(0)
         set_attributes_pair.append([])
         set_labels_pair.append([])

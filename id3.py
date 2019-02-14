@@ -16,7 +16,7 @@ class Node:
         self.attribute_name = None # Name of the attribute class
         self.prediction = None # If prediction is not a NoneType, then it is a leaf
         self.children = [] # To keep track and traverse the tree
-        self.next = None
+        self.sibling = None
 
     def assign_attribute_class(self, attribute_id):
         self.attribute_class = attribute_id
@@ -51,60 +51,8 @@ class ID3:
     def create_root(self):
         best_attribute, gain = get_highest_infogain(data, self.label, [0, 1, 2, 3])
         # self.tree[-1] = Node(best_attribute)
-        self.root = self.run_id3(self.data, self.label, target_attribute=0, attributes=[0, 1, 2, 3])
-    """
-    # ID3 Algorithm
-    def run_id3(self, examples, labels, attribute):
-        self.iteration += 1
-        # Create root here?
-        root = Node()
+        self.root = self.run_id3(self.data, self.label, target_attribute=[0, 0, 0, 0], attributes=[0, 1, 2, 3])
 
-        # On the way, the tree generating algorithm will have to divide dataset
-        if self.check_all_positive(labels):
-            # Return root node with pos/yes label
-            root.prediction = 1
-            return root # , 1 # 1 as in positive label
-        elif self.check_all_negative(labels):
-            # Return root node with neg/no label
-            root.prediction = 0
-            return root # , 0 # Negative label
-        elif len(attribute) == 0:
-            # No attributes left
-            # Return root node with label the most common value of classification attribute in example
-            pred = self.get_most_popular(labels)
-            root.prediction = pred
-            return root # , self.get_most_popular(example_labels=labels)
-
-        else:
-            # Best attribute
-            best_attribute, gain = get_highest_infogain(examples, labels, attribute)
-            # Assign best attribute to the root node
-            root.attribute_class = best_attribute
-
-            # Caluculate different values
-            num_distinct, values = self.extract_distinct_attributes(examples, best_attribute)
-            for value in values:
-                # For each attribute value for that specific best_attribute
-                # e.g., Outlook [Sunny, Overcast, Rain] 0, 1, 2
-                child_node = Node()
-                child_node.assign_attribute_class(value)
-
-                # Append children
-                root.children.append(child_node)
-
-                # Now determine and split examples those have value as their value for that attribute
-                num_of_branch_examples, branch_example = \
-                    self.who_has_this_value_as_its_attribute_class_value(data, best_attribute, value)
-
-                new_attributes = attribute.pop(best_attribute)
-
-                if num_of_branch_examples == 0:
-                    # If branch is empty
-                    child_node.prediction = self.get_most_popular(labels)
-                else:
-                    child_node = self.run_id3(branch_example, best_attribute, new_attributes)
-        return root # Finally
-    """
     def run_id3(self, examples, labels, target_attribute, attributes):
         """
 
@@ -118,17 +66,19 @@ class ID3:
 
         if self.check_all_positive(labels):
             # Return root node with pos/yes label
-            root.prediction = 1
+            root.attribute_class = 1
+            print("All positive")
             return root  # , 1 # 1 as in positive label
         elif self.check_all_negative(labels):
             # Return root node with neg/no label
-            root.prediction = 0
+            root.attribute_class = 0
             return root  # , 0 # Negative label
         elif len(attributes) == 0:
             # No attributes left
             # Return root node with label the most common value of classification attribute in example
             pred = self.get_most_popular(labels)
-            root.prediction = pred
+            print("Most common attribute: ", pred)
+            root.attribute_class = pred
             return root  # , self.get_most_popular(example_labels=labels)
 
         else:
@@ -141,6 +91,7 @@ class ID3:
                 node = Node()
                 node.assign_attribute_class(value)
                 root.children.append(node)
+                # print("New node value: ", value)
 
                 # Examples and labels now a subset
                 num_of_branch_examples, branch_example, branch_label = \
@@ -152,14 +103,15 @@ class ID3:
                 for i in range(len(attributes)):
                     if best_attribute != attributes[i]:
                         new_attributes.append(attributes[i])
-
+                # print("New attributes: ", branch_example)
                 if num_of_branch_examples == 0:
                     # Empty
                     v = self.get_most_popular(labels)
-                    node.assign_attribute_class(v)
+                    node.sibling = v
                 else:
-                    # If evenly divided...
-                    root.next = self.run_id3(branch_example, branch_label, target_attribute, new_attributes)
+                    print("Calling", attributes, "    ", new_attributes, "   ", best_attribute, "   ", retrieve_tennis_attribute_label(best_attribute))
+                    # Below this new branch add a subtree
+                    root.sibling = self.run_id3(branch_example, branch_label, target_attribute, new_attributes)
 
         return root
 
@@ -209,15 +161,30 @@ class ID3:
         num_of_examples = len(branch_example)
         return num_of_examples, branch_example, branch_labels
 
-
     def print_tree(self):
-        self.root.print()
-        for key in self.tree.keys():
-            print(self.tree[key])
+        print("===================== Decision TREE ======================")
+        # Attribute class
+        print(retrieve_tennis_attribute_label(self.root.attribute_class))
+        for child in self.root.children:
+            print(str(child.attribute_class) + "  |", end='\t')
+
+        print()
+        print(self.root.sibling)
+        for child in self.root.sibling.children:
+            print(child.attribute_class)
+
+        print("\n")
+        '''
+        print(self.root.attribute_name)
+        for child in self.root.children:
+            print(child.attribute_name + "  |", end='\t')
+        '''
 
 # root node contains
 if __name__ == '__main__':
+    # data, label = load_tennis_dataset()
     data, label = load_tennis_dataset()
+
     id3 = ID3(data, label)
     id3.create_root()
 
