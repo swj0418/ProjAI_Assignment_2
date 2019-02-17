@@ -235,10 +235,9 @@ if __name__ == '__main__':
     for i in range(len(data2)):
         pred = first_two_fold_id3.classify_instance(data2[i])
         # print("Prediction: ", pred, "  Actual: ", label2[i])
-        if pred == label[i]:
+        if pred == label2[i]:
             correct_count += 1
 
-    print(correct_count)
     print("Validation Accuracy 1: ", correct_count / len(data2))
 
     print()
@@ -250,7 +249,7 @@ if __name__ == '__main__':
     for i in range(len(data1)):
         pred = second_two_fold_id3.classify_instance(data1[i])
         # print("Prediction: ", pred, "  Actual: ", label1[i])
-        if pred == label[i]:
+        if pred == label1[i]:
             correct_count += 1
 
     print("Validation Accuracy 2: ", correct_count / len(data1))
