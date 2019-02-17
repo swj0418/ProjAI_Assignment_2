@@ -4,7 +4,7 @@ import random
 
 # Load in dataset being used
 from dataset import *
-data, labels = load_custom_dataset()
+data, labels, d2, l2 = load_custom_dataset()
 
 # Create and return a training and testing set from the dataset provided
 # The test set will be selected by randomly selecting 10% of the instances

@@ -1,6 +1,7 @@
 import os
 import sys
-
+import csv
+import numpy as np
 
 def load_id3_test_dataset():
     set = [[2, 1, 0, 1],
@@ -47,6 +48,9 @@ def load_custom_dataset():
     set = []
     labels = []
 
+    """
+    Training dataset
+    """
     # Open file with breast cancer data
     fileref = open(os.path.join(sys.path[0], "breast-cancer-wisconsin.data"), "r")
 
@@ -67,4 +71,19 @@ def load_custom_dataset():
             else:
                 adjusted_labels.append(1)
 
-    return examples, adjusted_labels
+    """
+    Test dataset
+    """
+    test_example = []
+    test_label = []
+    with open("./breast_cancer_wisconsin-test.data", "r") as file:
+        reader = csv.reader(file, delimiter=',')
+        for row in reader:
+            if "?" in row:
+                break
+            else:
+                test_example.append(list(map(int, row[1:len(row) - 1])))
+                label = row[len(row) - 1:]
+                test_label.append(int(label[0]))
+
+    return examples, adjusted_labels, test_example, test_label

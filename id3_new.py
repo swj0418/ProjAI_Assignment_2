@@ -1,13 +1,14 @@
 from dataset import *
 from id3lib import *
 from data_splitting_functions import *
-
+from k_fold_learning import *
 import numpy as np
+import matplotlib.pyplot as plt
+
 # Node class : each node will be a class of attributes
 #   (outlook, temperature, humidity, wind) having up to three children.
 # param data : set of corresponding lists for days on which the
 #    indicated attribute is present
-
 
 class Node:
     # Node will be universal whether they are root or not.
@@ -184,8 +185,6 @@ class ID3:
                     print("Depth 3: ", "parent attribute value: ", final.parent_attribute, "  my_attribute: ", final.attribute,
                           "  my_value: ", final.value)
 
-
-
     # Method for classifying new instances
     def classify_instance(self, example):
         cur_node = self.root
@@ -211,56 +210,13 @@ class ID3:
         # value at leaf node is our classification
         return cur_node.value
 
-
-# root node contains
 if __name__ == '__main__':
-
-    # read in data, label sets
-    #data, label = load_tennis_dataset()
-    data, label = load_custom_dataset()
-
-    # split data into training and testing sets
-    train_data, train_labels, test_data, test_labels = split_train_test(data, label)
-
-    # two-fold validation testing
-    print("Starting Two-Fold Validation Testing")
-    print()
-    data1, label1, data2, label2 = two_fold_val(train_data, train_labels)
-    first_two_fold_id3 = ID3(data1, label1)
-    first_two_fold_id3.build()
+    data, label, test_example, test_labels = load_custom_dataset()
+    accuracies = []
+    for i in range(100):
+        acc = k_fold("", data, label)
+        accuracies.append(acc)
 
 
-    print("========= First Iteration =========")
-    correct_count = 0
-    for i in range(len(data2)):
-        pred = first_two_fold_id3.classify_instance(data2[i])
-        # print("Prediction: ", pred, "  Actual: ", label2[i])
-        if pred == label2[i]:
-            correct_count += 1
-
-    print("Validation Accuracy 1: ", correct_count / len(data2))
-
-    print()
-    print("========= Second Iteration ======= ")
-    second_two_fold_id3 = ID3(data2, label2)
-    second_two_fold_id3.build()
-
-    correct_count = 0
-    for i in range(len(data1)):
-        pred = second_two_fold_id3.classify_instance(data1[i])
-        # print("Prediction: ", pred, "  Actual: ", label1[i])
-        if pred == label1[i]:
-            correct_count += 1
-
-    print("Validation Accuracy 2: ", correct_count / len(data1))
-
-    '''
-    id3 = ID3(data, label)
-    id3.build()
-
-    id3.print_tree()
-
-    for i in range(len(data)):
-        pred = id3.classify_instance(data[i])
-        print("Prediction: ", pred, "  Actual: ",label[i])
-        '''
+    plt.plot(accuracies)
+    plt.show()
