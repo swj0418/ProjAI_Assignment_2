@@ -44,7 +44,7 @@ def info_gain(set, label, A):
                 diff.append(element[A]) # element[A] refers to specific value for that attribute
 
     # Number of different values e.g., Outlook = 3, Weather = 2
-    num_values = len(diff)
+    num_values = max(diff)
 
     """
     This part requires generalization
@@ -54,7 +54,7 @@ def info_gain(set, label, A):
     set_attributes_pair = []
     set_labels_pair = []
 
-    for i in range(num_values):
+    for i in range(num_values + 1):
         attribute_counts.append(0)
         set_attributes_pair.append([])
         set_labels_pair.append([])
@@ -79,6 +79,8 @@ def info_gain(set, label, A):
         return_value -= (attribute_counts[count] / set_size) * entropy
         count += 1
 
+    # print("attribute counts: ", attribute_counts)
+    # print("Entropy: ", entropy_S)
     return return_value
 
 def get_highest_infogain(set, label, attribute_classes):
@@ -92,5 +94,6 @@ def get_highest_infogain(set, label, attribute_classes):
             attribute_class_num = attribute_classes[count]
 
         count += 1
+    # print("MAX: ", max, "    class num: ", attribute_class_num)
 
     return attribute_class_num, gain

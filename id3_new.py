@@ -35,7 +35,13 @@ class ID3:
         self.iteration = 0
 
     def build(self):
-        self.root = self.run_id3(self.data, self.label, range(len(data[0])))
+        # Printing data integrity
+        #print(self.data)
+        #print(self.label)
+        #print(range(len(data[0])))
+
+        self.root = self.run_id3(self.data, self.label, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        print("========================================== Tree building complete ===")
 
     def predict(self, tree, attribute):
         print("===================== Prediction ======================")
@@ -56,7 +62,7 @@ class ID3:
         """
         root = Node()
         root.parent_attribute = parent_attribute
-        print(examples, "    ", labels, "    ", attributes)
+        # print(examples, "    ", labels, "    ", attributes)
 
         if self.check_all_positive(labels):
             # Return root node with pos/yes label
@@ -179,11 +185,13 @@ class ID3:
                           "  my_value: ", final.value)
 
 
+
     # Method for classifying new instances
     def classify_instance(self, example):
         cur_node = self.root
 
         # traverse the tree until we reach a leaf node
+        iteration_count = 0
         while cur_node.value is None:
 
             # get value for the attribute in the desired instance
@@ -192,24 +200,24 @@ class ID3:
             attribute_val = example[cur_attribute]
 
             # find the child node down the path with the correct value
+            # Missing value problem
             for i in cur_node.children:
                 if i.parent_attribute == attribute_val:
                     cur_node = i
                     break
 
+                iteration_count += 1
+
         # value at leaf node is our classification
         return cur_node.value
-
-
-
-
 
 
 # root node contains
 if __name__ == '__main__':
 
     # read in data, label sets
-    data, label = load_tennis_dataset()
+    #data, label = load_tennis_dataset()
+    data, label = load_custom_dataset()
 
     # split data into training and testing sets
     train_data, train_labels, test_data, test_labels = split_train_test(data, label)
@@ -220,19 +228,32 @@ if __name__ == '__main__':
     data1, label1, data2, label2 = two_fold_val(train_data, train_labels)
     first_two_fold_id3 = ID3(data1, label1)
     first_two_fold_id3.build()
-    print("======== First Iteration =========")
+
+
+    print("========= First Iteration =========")
+    correct_count = 0
     for i in range(len(data2)):
         pred = first_two_fold_id3.classify_instance(data2[i])
-        print("Prediction: ", pred, "  Actual: ", label2[i])
+        # print("Prediction: ", pred, "  Actual: ", label2[i])
+        if pred == label[i]:
+            correct_count += 1
+
+    print(correct_count)
+    print("Validation Accuracy 1: ", correct_count / len(data2))
+
     print()
-    print("======== Second Iteration ======= ")
+    print("========= Second Iteration ======= ")
     second_two_fold_id3 = ID3(data2, label2)
     second_two_fold_id3.build()
 
+    correct_count = 0
     for i in range(len(data1)):
         pred = second_two_fold_id3.classify_instance(data1[i])
-        print("Prediction: ", pred, "  Actual: ", label1[i])
+        # print("Prediction: ", pred, "  Actual: ", label1[i])
+        if pred == label[i]:
+            correct_count += 1
 
+    print("Validation Accuracy 2: ", correct_count / len(data1))
 
     '''
     id3 = ID3(data, label)
