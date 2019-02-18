@@ -229,19 +229,9 @@ class ID3:
 if __name__ == '__main__':
     data, label, test_example, test_labels = load_custom_dataset()
     accuracies = []
-    trees = []
     for i in range(100):
-        tree, acc = k_fold("", data, label)
+        acc = k_fold("", data, label)
         accuracies.append(acc)
-        trees.append(tree)
-
-    # get best tree (min validation error)
-    best_tree_pos = accuracies.index(min(accuracies))
-    best_acc = accuracies[best_tree_pos]
-    best_tree = trees[best_tree_pos]
-
-    # get pruned tree
-    pruned_tree = best_tree.reduced_error_pruning(best_acc)
 
     plt.plot(accuracies)
     plt.show()

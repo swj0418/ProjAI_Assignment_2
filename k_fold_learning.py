@@ -25,4 +25,4 @@ def k_fold(model, example, labels, fold=1):
 
     print("Validation Accuracy 1: ", correct_count / len(val))
 
-    return two_fold_id3, correct_count / len(val)
+    return correct_count / len(val)
