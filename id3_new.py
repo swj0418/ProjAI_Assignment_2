@@ -256,9 +256,8 @@ if __name__ == '__main__':
     data, label, test_example, test_labels = load_custom_dataset()
     # data, label = load_tennis_dataset()
     accuracies = []
-    trees = []
     for i in range(100):
-        acc, tree = k_fold("", data, label, fold=5)
+        tree, acc = k_fold("", data, label)
         accuracies.append(acc)
         with open("./tree.dc", 'wb') as file:
             pickle.dump(tree, file)
