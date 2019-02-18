@@ -2,7 +2,7 @@ import os
 import sys
 import numpy as np
 from data_splitting_functions import *
-from id3_new import ID3
+from id3_new import *
 
 def k_fold(model, example, labels, fold=1):
     """
@@ -25,4 +25,4 @@ def k_fold(model, example, labels, fold=1):
 
     print("Validation Accuracy 1: ", correct_count / len(val))
 
-    return correct_count / len(val)
+    return two_fold_id3, correct_count / len(val)

@@ -210,13 +210,38 @@ class ID3:
         # value at leaf node is our classification
         return cur_node.value
 
+    # Method for pruning generated decision trees
+    # At each decision node, remove and replace with a prediction of the most
+    # common value found until either 1) there are no more pruned trees that
+    # perform at least as well as the un-pruned version or 2) there are
+    # no more trees left to prune
+    def reduced_error_pruning(self, unpruned_accuracy):
+        pruned_acc = 0
+        tmp_tree = self.root
+
+        # check if any nodes left
+        if tmp_tree.value is not None:
+            return tmp_tree
+
+        for i in tmp_tree.children:
+            print()
+
 if __name__ == '__main__':
     data, label, test_example, test_labels = load_custom_dataset()
     accuracies = []
+    trees = []
     for i in range(100):
-        acc = k_fold("", data, label)
+        tree, acc = k_fold("", data, label)
         accuracies.append(acc)
+        trees.append(tree)
 
+    # get best tree (min validation error)
+    best_tree_pos = accuracies.index(min(accuracies))
+    best_acc = accuracies[best_tree_pos]
+    best_tree = trees[best_tree_pos]
+
+    # get pruned tree
+    pruned_tree = best_tree.reduced_error_pruning(best_acc)
 
     plt.plot(accuracies)
     plt.show()
