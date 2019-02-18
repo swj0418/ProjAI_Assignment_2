@@ -87,6 +87,8 @@ def get_highest_infogain(set, label, attribute_classes):
     max = 0
     attribute_class_num = 0
     count = 0
+    gain = 0
+    # print(set, "  ", label, "   ", attribute_classes)
     for attribute_class in attribute_classes:
         gain = info_gain(set, label, attribute_class)
         if gain > max:

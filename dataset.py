@@ -58,7 +58,7 @@ def load_custom_dataset():
     for line in fileref:
         line = line.rstrip() # remove EOL chars
         line_vals = line.split(",") # seperate the features
-        set.append(line_vals[1:]) # Exclude sample id
+        set.append(line_vals[1:len(line_vals) - 1]) # Exclude sample id
         labels.append(line_vals[len(line_vals) - 1:])
 
     examples = []

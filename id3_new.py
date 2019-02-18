@@ -4,6 +4,8 @@ from data_splitting_functions import *
 from k_fold_learning import *
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import pickle
 
 # Node class : each node will be a class of attributes
 #   (outlook, temperature, humidity, wind) having up to three children.
@@ -40,9 +42,26 @@ class ID3:
         #print(self.data)
         #print(self.label)
         #print(range(len(data[0])))
+        attributes = []
+        for i in range(len(self.data[0])):
+            attributes.append(i)
 
-        self.root = self.run_id3(self.data, self.label, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+        # attributes = np.zeros(shape=(10,), dtype=int)
+
+        self.root = self.run_id3(self.data, self.label, attributes)
+
         print("========================================== Tree building complete ===")
+
+    def incremental_build(self, index):
+        attributes = []
+        for i in range(len(self.data[0])):
+            attributes.append(i)
+
+        dat = self.data[:index + 1]
+        lab = self.label[:index + 1]
+        self.root = self.run_id3(dat, lab, attributes)
+
+
 
     def predict(self, tree, attribute):
         print("===================== Prediction ======================")
@@ -70,12 +89,12 @@ class ID3:
             root.value = 1
             # print("All positive: ", root.value)
             return root  # , 1 # 1 as in positive label
-        elif self.check_all_negative(labels):
+        if self.check_all_negative(labels):
             # Return root node with neg/no label
             root.value = 0
             # print("All negative: ", root.value)
             return root  # , 0 # Negative label
-        elif len(attributes) == 0:
+        if len(attributes) == 0:
             # No attributes left
             # Return root node with label the most common value of classification attribute in example
             pred = self.get_most_popular(labels)
@@ -86,6 +105,7 @@ class ID3:
         else:
             best_attribute, gain = get_highest_infogain(examples, labels, attributes)
             root.attribute = best_attribute
+            # print(best_attribute, " ", gain)
 
             num_distinct, possible_values = self.extract_distinct_attributes(examples, best_attribute)
             for value in possible_values:
@@ -106,8 +126,8 @@ class ID3:
                 for i in range(len(attributes)):
                     if best_attribute != attributes[i]:
                         new_attributes.append(attributes[i])
-                # print("New attributes: ", branch_example)
 
+                # print("New attributes: ", branch_example)
                 if num_of_branch_examples == 0:
                     # Empty
                     v = self.get_most_popular(labels)
@@ -116,6 +136,7 @@ class ID3:
                     # print("Calling iter: ", self.iteration, attributes, "    ", new_attributes, "   ", best_attribute, "   ", retrieve_tennis_attribute_label(best_attribute))
                     # Below this new branch add a subtree
                     self.iteration += 1
+                    # print(len(branch_example), " ", new_attributes)
                     node = self.run_id3(branch_example, branch_label, new_attributes, parent_attribute=value)
                     root.children.append(node)
 
@@ -205,18 +226,29 @@ class ID3:
                     cur_node = i
                     break
 
+                if iteration_count > 100:
+                    cur_node = i
+                    break
+
                 iteration_count += 1
 
         # value at leaf node is our classification
         return cur_node.value
 
 if __name__ == '__main__':
+    """
     data, label, test_example, test_labels = load_custom_dataset()
+    # data, label = load_tennis_dataset()
     accuracies = []
     for i in range(100):
-        acc = k_fold("", data, label)
+        acc, tree = k_fold("", data, label, fold=5)
         accuracies.append(acc)
-
+        with open("./tree.dc", 'wb') as file:
+            pickle.dump(tree, file)
 
     plt.plot(accuracies)
+    plt.plot(np.asarray(accuracies).mean(), 'r-')
+
     plt.show()
+    """
+
