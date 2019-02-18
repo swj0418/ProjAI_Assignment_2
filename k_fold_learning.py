@@ -2,7 +2,6 @@ import os
 import sys
 import numpy as np
 from data_splitting_functions import *
-from id3_new import ID3
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from id3_new import *

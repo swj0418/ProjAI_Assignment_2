@@ -1,11 +1,10 @@
 from dataset import *
 from id3lib import *
-from data_splitting_functions import *
-from k_fold_learning import *
+# from data_splitting_functions import *
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-import pickle
+# import matplotlib.pyplot as plt
+# import matplotlib.patches as mpatches
+# import pickle
 
 # Node class : each node will be a class of attributes
 #   (outlook, temperature, humidity, wind) having up to three children.
@@ -20,15 +19,27 @@ class Node:
         self.parent_attribute = None
         self.value = None
         self.children = []
-        self.sibling = []
 
-    def print(self):
-        if self.attribute == None:
-            print("Value: ", self.value)
-        elif self.value == None:
-            print("My attribute: ", self.attribute)
-            for child in self.children:
-                child.print()
+    def print(self, depth):
+        if self.value != None:
+            # Leaf node
+            line_len = ""
+            for _ in range(depth):
+                line_len += "-----"
+            print(line_len + "-------", "edge: ", self.parent_attribute, "------- Leaf Node: ", self.value)
+        else:
+            line_len = ""
+            for _ in range(depth):
+                line_len += "-----"
+
+            if len(self.children) != 0:
+                # Has children
+                print(line_len + "---", "edge: ", self.parent_attribute, "-- Attribute Node: ", self.attribute)
+                for child in self.children:
+                    child.print(depth + 1)
+            else:
+                print(line_len + "---", "edge: ", self.parent_attribute, "-- Attribute Node: ", self.attribute)
+
 
 class ID3:
     def __init__(self, data, label):
@@ -61,7 +72,12 @@ class ID3:
         lab = self.label[:index + 1]
         self.root = self.run_id3(dat, lab, attributes)
 
+    def incremental_build_v2(self, example, label):
+        attributes = []
+        for i in range(len(self.data[0])):
+            attributes.append(i)
 
+        self.root = self.run_id3(example, label, attributes)
 
     def predict(self, tree, attribute):
         print("===================== Prediction ======================")
@@ -256,11 +272,23 @@ if __name__ == '__main__':
     data, label, test_example, test_labels = load_custom_dataset()
     # data, label = load_tennis_dataset()
     accuracies = []
+    trees = []
     for i in range(100):
-        tree, acc = k_fold("", data, label)
+        acc, tree = k_fold("", data, label, fold=5)
         accuracies.append(acc)
         with open("./tree.dc", 'wb') as file:
             pickle.dump(tree, file)
+        tree, acc = k_fold("", data, label)
+        accuracies.append(acc)
+        trees.append(tree)
+
+    # get best tree (min validation error)
+    best_tree_pos = accuracies.index(min(accuracies))
+    best_acc = accuracies[best_tree_pos]
+    best_tree = trees[best_tree_pos]
+
+    # get pruned tree
+    pruned_tree = best_tree.reduced_error_pruning(best_acc)
 
     plt.plot(accuracies)
     plt.plot(np.asarray(accuracies).mean(), 'r-')
